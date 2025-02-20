@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Order</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: #333;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: nowrap;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            white-space: nowrap;
+        }
+        .cart-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: auto;
+        }
+        .cart-icon, .profile-icon {
+            position: relative;
+            cursor: pointer;
+        }
+        .cart-icon img, .profile-icon img {
+            width: 30px;
+            height: 30px;
+        }
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background: red;
+            color: white;
+            font-size: 14px;
+            padding: 3px 7px;
+            border-radius: 50%;
+        }
+        .cart-dropdown {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            width: 250px;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            padding: 10px;
+            z-index: 1000;
+            border-radius: 5px;
+        }
+        .cart-dropdown h3 {
+            margin: 0;
+            padding: 10px;
+            background: #007BFF;
+            color: white;
+            text-align: center;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .cart-item span {
+            flex: 1;
+        }
+        .cart-item input {
+            width: 40px;
+            text-align: center;
+        }
+        .remove-item {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .proceed-btn {
+            background: #007BFF;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .add-to-quote {
+            background: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            white-space: nowrap;
+        }
+        .add-to-quote:hover {
+            background: #0056b3;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h2 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group input {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .track-btn {
+            background: #007BFF;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        .track-btn:hover {
+            background: #0056b3;
+        }
+        .order-status {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+            display: none;
+        }
+        .contact-info {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="products.html">Products</a>
+            <a href="track-order.html">Track Order</a>
+            <a href="contact.html">Contact Us</a>
+            <a href="login-register.html" id="loginLink">Login/Register</a>
+        </div>
+
+        <!-- Right-side container for Quote Request, Cart, and Profile -->
+        <div class="cart-container">
+            <button class="add-to-quote" onclick="goToQuoteRequest()">Quote Request</button>
+            <div class="cart-icon" onclick="toggleCartDropdown()">
+                <img src="cart.png" alt="Cart">
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
+            <div class="cart-dropdown" id="cartDropdown">
+                <h3>Your Cart</h3>
+                <div id="cartItems"></div>
+                <button class="proceed-btn" onclick="goToQuoteRequest()">Proceed to Quote Request</button>
+            </div>
+            <div class="profile-icon" id="profileContainer" onclick="goToProfile()" style="display: none;">
+                <img src="profile.png" alt="Profile">
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Track Your Order</h2>
+
+        <!-- Order Tracking Form -->
+        <div class="form-group">
+            <input type="text" id="orderID" placeholder="Enter your Order ID" required>
+        </div>
+        <button class="track-btn" onclick="trackOrder()">Track Order</button>
+
+        <!-- Order Status Display -->
+        <div class="order-status" id="orderStatus">
+            <h3>Order Status</h3>
+            <p id="statusText">Fetching status...</p>
+        </div>
+
+        <!-- Customer Support Contact -->
+        <div class="contact-info">
+            <p><strong>Need help?</strong> Contact our support team.</p>
+            <p><strong>Phone:</strong> +1 234 567 890</p>
+            <p><strong>Email:</strong> support@scaffoldingcompany.com</p>
+        </div>
+    </div>
+
+    <script>
+let cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+function toggleCartDropdown() {
+    let cartDropdown = document.getElementById('cartDropdown');
+    cartDropdown.style.display = (cartDropdown.style.display === "block") ? "none" : "block";
+    updateCartDropdown();
+}
+
+function updateCartDropdown() {
+    let cartItems = document.getElementById('cartItems');
+    cartItems.innerHTML = "";
+
+    if (Object.keys(cart).length === 0) {
+        cartItems.innerHTML = "<p style='text-align:center;'>Cart is empty</p>";
+        return;
+    }
+
+    for (let product in cart) {
+        cartItems.innerHTML += `
+            <div class="cart-item">
+                <span>${product}</span>
+                <input type="number" value="${cart[product]}" min="1" onchange="updateQuantity('${product}', this.value)">
+                <button class="remove-item" onclick="removeFromCart('${product}')">X</button>
+            </div>
+        `;
+    }
+}
+
+function goToQuoteRequest() {
+    if (Object.keys(cart).length === 0) {
+        alert("No products selected. Redirecting to Products Page.");
+        window.location.href = "products.html";
+        return;
+    }
+    window.location.href = "quote-request.html";
+}
+
+function trackOrder() {
+    alert("Order tracking feature is under development.");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    updateCartDropdown();
+});
+    </script>
+
+</body>
+</html>

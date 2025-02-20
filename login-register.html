@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+        }
+        .navbar {
+            background: #333;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 15px;
+            font-size: 18px;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .submit-btn {
+            background: #007BFF;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        .submit-btn:hover {
+            background: #0056b3;
+        }
+        .toggle-link {
+            margin-top: 15px;
+            display: block;
+            color: #007BFF;
+            cursor: pointer;
+        }
+        .toggle-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div>
+            <a href="index.html">Home</a>
+            <a href="products.html">Products</a>
+            <a href="track-order.html">Track Order</a>
+            <a href="contact.html">Contact Us</a>
+            <a href="login-register.html">Login/Register</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Login Form -->
+        <div id="loginForm">
+            <h2>Login</h2>
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password" required>
+            </div>
+            <button class="submit-btn" onclick="loginUser()">Login</button>
+            <span class="toggle-link" onclick="toggleForms()">Don't have an account? Register</span>
+        </div>
+
+        <!-- Register Form (Initially Hidden) -->
+        <div id="registerForm" style="display: none;">
+            <h2>Register</h2>
+            <div class="form-group">
+                <label for="registerName">Full Name</label>
+                <input type="text" id="registerName" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+                <label for="registerContactNo">Contact No.</label>
+                <input type="text" id="registerName" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+                <label for="registerBusiness">Business Name</label>
+                <input type="text" id="registerName" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+                <label for="registerEmail">Email</label>
+                <input type="email" id="registerEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword" placeholder="Enter your password" required>
+            </div>
+            <button class="submit-btn" onclick="registerUser()">Register</button>
+            <span class="toggle-link" onclick="toggleForms()">Already have an account? Login</span>
+        </div>
+    </div>
+
+    <script>
+        function toggleForms() {
+            let loginForm = document.getElementById('loginForm');
+            let registerForm = document.getElementById('registerForm');
+            if (loginForm.style.display === "none") {
+                loginForm.style.display = "block";
+                registerForm.style.display = "none";
+            } else {
+                loginForm.style.display = "none";
+                registerForm.style.display = "block";
+            }
+        }
+
+        function loginUser() {
+            let email = document.getElementById('loginEmail').value.trim();
+            let password = document.getElementById('loginPassword').value.trim();
+
+            if (!email || !password) {
+                alert("Please fill out all fields.");
+                return;
+            }
+
+            // Simulated user authentication (Replace with actual backend API)
+            let registeredUsers = JSON.parse(localStorage.getItem('users')) || {};
+            if (registeredUsers[email] && registeredUsers[email] === password) {
+                alert("Login successful! Redirecting to home page.");
+                localStorage.setItem('currentUser', email);
+                window.location.href = "index.html";
+            } else {
+                alert("Invalid credentials. Please try again.");
+            }
+        }
+
+        function registerUser() {
+            let name = document.getElementById('registerName').value.trim();
+            let email = document.getElementById('registerEmail').value.trim();
+            let password = document.getElementById('registerPassword').value.trim();
+
+            if (!name || !email || !password) {
+                alert("Please fill out all fields.");
+                return;
+            }
+
+            // Simulated user registration (Replace with actual backend API)
+            let registeredUsers = JSON.parse(localStorage.getItem('users')) || {};
+            if (registeredUsers[email]) {
+                alert("Email already registered. Please log in.");
+                return;
+            }
+
+            registeredUsers[email] = password;
+            localStorage.setItem('users', JSON.stringify(registeredUsers));
+            alert("Registration successful! You can now log in.");
+            toggleForms();
+        }
+    </script>
+
+</body>
+</html>

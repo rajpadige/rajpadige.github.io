@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+        }
+        .navbar {
+            background: #333;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 15px;
+            font-size: 18px;
+        }
+        .cart-container {
+            display: flex;
+            align-items: center;
+        }
+        .cart-icon, .profile-icon {
+            position: relative;
+            cursor: pointer;
+            margin-left: 20px;
+        }
+        .cart-icon img, .profile-icon img {
+            width: 30px;
+            height: 30px;
+        }
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background: red;
+            color: white;
+            font-size: 14px;
+            padding: 3px 7px;
+            border-radius: 50%;
+        }
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .submit-btn {
+            background: #007BFF;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        .submit-btn:hover {
+            background: #0056b3;
+        }
+        .logout-btn {
+            background: red;
+            color: white;
+            margin-top: 20px;
+        }
+        .order-history {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div>
+            <a href="index.html">Home</a>
+            <a href="products.html">Products</a>
+            <a href="track-order.html">Track Order</a>
+            <a href="contact.html">Contact Us</a>
+        </div>
+        <div class="cart-container">
+            <!-- Quote Request Button -->
+            <button class="submit-btn" onclick="goToQuoteRequest()">Quote Request</button>
+            <!-- Cart Icon -->
+            <div class="cart-icon" onclick="toggleCart()">
+                <img src="cart.png" alt="Cart">
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
+            <!-- Profile Icon -->
+            <div class="profile-icon">
+                <img src="profile.png" alt="Profile">
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>User Profile</h2>
+
+        <!-- Profile Information -->
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" required>
+        </div>
+
+        <button class="submit-btn" onclick="updateProfile()">Update Profile</button>
+
+        <!-- Change Password -->
+        <h3>Change Password</h3>
+        <div class="form-group">
+            <label for="currentPassword">Current Password</label>
+            <input type="password" id="currentPassword">
+        </div>
+        <div class="form-group">
+            <label for="newPassword">New Password</label>
+            <input type="password" id="newPassword">
+        </div>
+        <button class="submit-btn" onclick="changePassword()">Change Password</button>
+
+        <!-- Order History -->
+        <h3>Order History</h3>
+        <div class="order-history" id="orderHistory">
+            <p>No orders found.</p>
+        </div>
+
+        <!-- Logout Button -->
+        <button class="submit-btn logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        function goToQuoteRequest() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || {};
+            if (Object.keys(cart).length === 0) {
+                alert("No products selected. Redirecting to Products Page.");
+                window.location.href = "products.html";
+            } else {
+                window.location.href = "quote-request.html";
+            }
+        }
+
+        function loadProfile() {
+            let currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                alert("Please log in to access your profile.");
+                window.location.href = "login-register.html";
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('users')) || {};
+            if (users[currentUser]) {
+                document.getElementById('name').value = currentUser;
+                document.getElementById('email').value = currentUser;
+                document.getElementById('phone').value = users[currentUser].phone || "";
+            }
+
+            loadOrderHistory();
+        }
+
+        function updateProfile() {
+            let email = document.getElementById('email').value.trim();
+            let phone = document.getElementById('phone').value.trim();
+
+            if (!email || !phone) {
+                alert("Please fill out all fields.");
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('users')) || {};
+            let currentUser = localStorage.getItem('currentUser');
+            if (users[currentUser]) {
+                users[currentUser].phone = phone;
+                localStorage.setItem('users', JSON.stringify(users));
+                alert("Profile updated successfully!");
+            }
+        }
+
+        function changePassword() {
+            let currentPassword = document.getElementById('currentPassword').value.trim();
+            let newPassword = document.getElementById('newPassword').value.trim();
+            let currentUser = localStorage.getItem('currentUser');
+            let users = JSON.parse(localStorage.getItem('users')) || {};
+
+            if (users[currentUser] && users[currentUser] === currentPassword) {
+                users[currentUser] = newPassword;
+                localStorage.setItem('users', JSON.stringify(users));
+                alert("Password updated successfully!");
+            } else {
+                alert("Incorrect current password.");
+            }
+        }
+
+        function loadOrderHistory() {
+            let orderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
+            let historyDiv = document.getElementById('orderHistory');
+            historyDiv.innerHTML = "";
+
+            if (orderHistory.length === 0) {
+                historyDiv.innerHTML = "<p>No orders found.</p>";
+                return;
+            }
+
+            orderHistory.forEach(order => {
+                let orderElement = document.createElement('p');
+                orderElement.innerText = `Order ID: ${order.id} - Status: ${order.status}`;
+                historyDiv.appendChild(orderElement);
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            alert("You have been logged out.");
+            window.location.href = "login-register.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", loadProfile);
+    </script>
+
+</body>
+</html>

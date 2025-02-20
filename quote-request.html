@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Request</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: #333;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 15px;
+            font-size: 18px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+        }
+        .quote-list {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f9f9f9;
+            margin-bottom: 20px;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .cart-item span {
+            flex: 1;
+        }
+        .cart-item input {
+            width: 40px;
+            text-align: center;
+        }
+        .remove-item {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .submit-btn {
+            background: #007BFF;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 18px;
+        }
+        .submit-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div>
+            <a href="index.html">Home</a>
+            <a href="products.html">Products</a>
+            <a href="track-order.html">Track Order</a>
+            <a href="contact.html">Contact Us</a>
+            <a href="login-register.html">Login/Register</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Quote Request</h2>
+
+        <!-- Quote Cart Items -->
+        <div class="quote-list" id="quoteList">
+            <h3>Selected Products</h3>
+            <div id="cartItems"></div>
+        </div>
+
+        <!-- Customer Information Form -->
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" placeholder="Enter your name" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" placeholder="Enter your phone number" required>
+        </div>
+        <div class="form-group">
+            <label for="message">Additional Notes (Optional)</label>
+            <textarea id="message" rows="4" placeholder="Enter any special requirements..."></textarea>
+        </div>
+
+        <button class="submit-btn" onclick="submitQuoteRequest()">Submit Quote Request</button>
+    </div>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+        function loadQuoteItems() {
+            let cartItems = document.getElementById('cartItems');
+            cartItems.innerHTML = "";
+
+            if (Object.keys(cart).length === 0) {
+                alert("No products selected. Redirecting to Products Page.");
+                window.location.href = "products.html";
+                return;
+            }
+
+            for (let product in cart) {
+                cartItems.innerHTML += `
+                    <div class="cart-item">
+                        <span>${product}</span>
+                        <input type="number" value="${cart[product]}" min="1" onchange="updateQuantity('${product}', this.value)">
+                        <button class="remove-item" onclick="removeFromCart('${product}')">X</button>
+                    </div>
+                `;
+            }
+        }
+
+        function updateQuantity(product, qty) {
+            cart[product] = parseInt(qty);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            loadQuoteItems();
+        }
+
+        function removeFromCart(product) {
+            delete cart[product];
+            localStorage.setItem('cart', JSON.stringify(cart));
+            loadQuoteItems();
+        }
+
+        function submitQuoteRequest() {
+            let name = document.getElementById('name').value.trim();
+            let email = document.getElementById('email').value.trim();
+            let phone = document.getElementById('phone').value.trim();
+
+            if (!name || !email || !phone) {
+                alert("Please fill out all required fields.");
+                return;
+            }
+
+            alert("Your quote request has been submitted successfully! Our team will contact you soon.");
+            localStorage.removeItem('cart');
+            window.location.href = "index.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", loadQuoteItems);
+    </script>
+
+</body>
+</html>
